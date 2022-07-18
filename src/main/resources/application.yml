@@ -1,0 +1,25 @@
+spring:
+  datasource:
+    driver-class-name: oracle.jdbc.driver.OracleDriver
+    url: jdbc:oracle:thin:@127.0.0.1:1521:orcl
+    username: scott
+    password: 123456
+  mvc:
+    view:
+      prefix: /
+      suffix: .jsp
+  redis:
+    database: 0
+    timeout: 5000
+    host: 123.56.220.62
+    port: 6379
+mybatis:
+  mapper-locations: classpath:com/nk/mapper/*Mapper.xml
+  type-aliases-package: com.nk.entity
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+pagehelper:
+  auto-dialect: oracle
+  support-methods-arguments: true
+  reasonable: true

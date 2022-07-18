@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nk.mapper.CompanyMapper">
+  <resultMap id="BaseResultMap" type="com.nk.entity.Company">
+    <id column="COMPANY_ID" jdbcType="DECIMAL" property="companyId" />
+    <result column="COMPANY_NAME" jdbcType="VARCHAR" property="companyName" />
+    <result column="ADDRESS" jdbcType="VARCHAR" property="address" />
+    <result column="PHONE" jdbcType="VARCHAR" property="phone" />
+    <result column="FAX" jdbcType="VARCHAR" property="fax" />
+    <result column="STATUS" jdbcType="DECIMAL" property="status" />
+  </resultMap>
+<select id="getAllCompany" resultMap="BaseResultMap">
+  select * from company_t
+</select>
+  <delete id="deleteCompanyById">
+    delete from company_t where company_id in (${idStr})
+  </delete>
+  <insert id="addCompany">
+    insert into company_t(company_name,address,phone,fax,status) values(#{companyName},#{address},#{phone},#{fax},#{status})
+  </insert>
+  <select id="getCompanyById" resultMap="BaseResultMap">
+    select * from company_t where company_id = #{companyId}
+  </select>
+  <update id="modifyCompany">
+    update company_t set company_name=#{companyName},address=#{address},phone=#{phone},fax=#{fax},status=#{status}
+    where company_id = #{companyId}
+  </update>
+  <select id="getCompanyByName" resultMap="BaseResultMap">
+    select * from company_t where company_name like '%${companyName}%'
+  </select>
+  <select id="getCompanyByIdStr" resultType="com.nk.entity.Company">
+    select * from company_t where company_id in (${idStr})
+  </select>
+  <select id="getAllCompanyAdd" resultMap="BaseResultMap">
+    select * from company_t where status=1
+  </select>
+</mapper>

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nk.mapper.LoginLogMapper">
+  <resultMap id="BaseResultMap" type="com.nk.entity.LoginLog">
+    <id column="ID" jdbcType="DECIMAL" property="id" />
+    <result column="SESSION_ID" jdbcType="VARCHAR" property="sessionId" />
+    <result column="LOGIN_TIME" jdbcType="VARCHAR" property="loginTime" />
+    <result column="EXIT_TIME" jdbcType="VARCHAR" property="exitTime" />
+    <result column="USER_ID" jdbcType="DECIMAL" property="userId" />
+  </resultMap>
+  <insert id="insertLoginLog">
+    insert into loginlog_t(session_id,login_time,user_id) values(#{sessionId},#{time},#{userId})
+  </insert>
+  <update id="updateLoginLog">
+    update loginlog_t set exit_time=#{time} where session_id=#{sessionId}
+  </update>
+  <select id="getLoginLogCount" resultType="com.nk.entity.LoginLogCount">
+    select b.name,b.username,c.company_name,d.department_name,count(*) num from loginlog_t a,user_t b,company_t c,department_t d
+    where a.user_id=b.user_id and b.department_id=d.department_id and d.company_id=c.company_id and b.name like '%${name}%' and b.username like '%${username}%'
+    <if test="companyId !=null and companyId!=''">
+      and c.company_id=#{companyId}
+    </if>
+    <if test="departmentId !=null and departmentId!=''">
+      and d.department_id=#{departmentId}
+    </if>
+    <if test="start!=null and start !=''">
+      and login_time &gt; #{start}
+    </if>
+    <if test="end!=null and end !=''">
+      and login_time &lt; #{end}
+    </if>
+    group by b.name,b.username,c.company_name,d.department_name order by num desc
+  </select>
+  <delete id="deleteLoginLog">
+    delete from loginlog_t where id in (${idStr})
+  </delete>
+
+  <select id="getLoginLog" resultType="com.nk.entity.LoginLogPOVO">
+    select a.id,a.login_time,a.exit_time,b.name,b.username,c.company_name,d.department_name  from loginlog_t a,user_t b,company_t c,department_t d
+    where a.user_id=b.user_id and b.department_id=d.department_id and d.company_id=c.company_id
+    and b.name like '%${name}%' and b.username like '%${username}%' and exit_time!='在线'
+    <if test="companyId !=null and companyId!=''">
+      and c.company_id=#{companyId}
+    </if>
+    <if test="departmentId !=null and departmentId!=''">
+      and d.department_id=#{departmentId}
+    </if>
+    <if test="start !=null and start !=''">
+      and a.login_time &gt; #{start}
+    </if>
+    <if test="end !=null and end !=''">
+      and a.login_time &lt; #{end}
+    </if>
+    order by a.id desc
+  </select>
+
+  <select id="getPreLoginTimeByUserId" resultType="string">
+    select login_time from loginlog_t t where user_id=#{userId} and not exists (select 1 from loginlog_t where id > t.id and user_id=#{userId})
+  </select>
+</mapper>

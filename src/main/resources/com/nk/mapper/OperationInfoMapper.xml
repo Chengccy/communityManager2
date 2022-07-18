@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nk.mapper.OperationInfoMapper">
+  <resultMap id="BaseResultMap" type="com.nk.entity.OperationInfo">
+    <result column="ID" jdbcType="DECIMAL" property="id" />
+    <result column="TABLE_NAME" jdbcType="VARCHAR" property="tableName" />
+    <result column="TYPE" jdbcType="VARCHAR" property="type" />
+    <result column="CONTENT_BEFORE" jdbcType="VARCHAR" property="contentBefore" />
+    <result column="CONTENT_AFTER" jdbcType="VARCHAR" property="contentAfter" />
+    <result column="TIME" jdbcType="VARCHAR" property="time" />
+    <result column="OPERATOR" jdbcType="VARCHAR" property="operator" />
+    <result column="RESULT" jdbcType="VARCHAR" property="result" />
+  </resultMap>
+  <insert id="addOperationInfo">
+    insert into operationinfo_t(table_name,type,content_before,content_after,operator,result)
+    values(#{tableName},#{type},#{contentBefore},#{contentAfter},#{operator},#{result})
+  </insert>
+  <select id="getOperationInfo" resultMap="BaseResultMap">
+    select * from operationinfo_t
+    where table_name like '%${tableName}%' and type like '%${type}%' and operator like '%${operator}%'
+    <if test="start !=null and start !=''">
+      and time &gt; #{start}
+    </if>
+    <if test="end !=null and end!=''">
+      and time &lt; #{end}
+    </if>
+  </select>
+
+</mapper>

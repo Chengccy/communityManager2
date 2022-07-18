@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nk.mapper.UserMapper">
+  <resultMap id="BaseResultMap" type="com.nk.entity.UserPOVO">
+    <id column="USER_ID" jdbcType="DECIMAL" property="userId" />
+    <result column="NAME" jdbcType="VARCHAR" property="name" />
+    <result column="USERNAME" jdbcType="VARCHAR" property="username" />
+    <result column="PASSWORD" jdbcType="VARCHAR" property="password" />
+    <result column="DEPARTMENT_ID" jdbcType="DECIMAL" property="departmentId" />
+    <result column="CREATE_TIME" jdbcType="VARCHAR" property="createTime" />
+    <result column="EMAIL" jdbcType="VARCHAR" property="email" />
+    <result column="IMAGES" jdbcType="VARCHAR" property="images" />
+    <result column="STATUS" jdbcType="DECIMAL" property="status" />
+    <result column="COMPANY_ID" jdbcType="DECIMAL" property="companyId" />
+    <result column="COMPANY_NAME" jdbcType="VARCHAR" property="companyName" />
+    <result column="DEPARTMENT_NAME" jdbcType="VARCHAR" property="departmentName" />
+  </resultMap>
+  <select id="queryUserByUsernameAndPassword" resultType="com.nk.entity.User">
+    select * from user_t
+    where username=#{username} and password=#{password}
+  </select>
+
+  <insert id="addUser">
+    insert into user_t(name,username,password,department_id,email,images,status) 
+    values(#{name},#{username},#{password},#{departmentId},#{email},#{images},#{status})
+  </insert>
+  
+  <select id="getUser" resultType="com.nk.entity.UserPOVO">
+    select a.*,b.company_name,c.department_name,b.company_id
+    from  user_t a, company_t b,department_t c where a.department_id=c.department_id and c.company_id=b.company_id
+    and a.name like '%${name}%'
+    <if test="companyId !=null and companyId!=''">
+      and b.company_id=#{companyId}
+    </if>
+    <if test="departmentId !=null and departmentId!=''">
+      and c.department_id=#{departmentId}
+    </if>
+  </select>
+    <select id="getUserByIdStr" resultType="com.nk.entity.User">
+      select * from user_t where user_id in (${idStr})
+    </select>
+
+  <delete id="deleteUser">
+    delete from user_t where user_id in (${idStr})
+  </delete>
+
+  <update id="modifyUser">
+    update user_t set name=#{name},username=#{username},password=#{password},department_id=#{departmentId},email=#{email},images=#{images},status=#{status}
+    where user_id=#{userId}
+  </update>
+
+  <select id="getLastUser" resultType="com.nk.entity.User">
+    select * from user_t t where not exists (select 1 from user_t where user_id>t.user_id)
+  </select>
+
+</mapper>

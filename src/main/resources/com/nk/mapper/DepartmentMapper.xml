@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nk.mapper.DepartmentMapper">
+  <resultMap id="BaseResultMap" type="com.nk.entity.Department">
+    <id column="DEPARTMENT_ID" jdbcType="DECIMAL" property="departmentId" />
+    <result column="DEPARTMENT_NAME" jdbcType="VARCHAR" property="departmentName" />
+    <result column="STATUS" jdbcType="DECIMAL" property="status" />
+    <result column="COMPANY_ID" jdbcType="DECIMAL" property="companyId" />
+  </resultMap>
+  <select id="getDepartmentByCompanyId" resultMap="BaseResultMap">
+    select * from department_t where 1=1
+    <if test="companyId !=null and companyId!=''">
+      and company_id=#{companyId}
+    </if>
+  </select>
+  <select id="getDepartment" resultType="com.nk.entity.DepartmentPOVO">
+    select a.*,b.company_name from department_t a,company_t b where a.company_id=b.company_id
+    <if test="companyId !=null and companyId!=''">
+      and a.company_id=#{companyId}
+    </if>
+
+  </select>
+  <insert id="addDepartment">
+    insert into department_t(company_id,department_name,status) values(#{companyId},#{departmentName},#{status})
+  </insert>
+  <delete id="deleteDepartment">
+    delete from department_t where department_id in (${idStr})
+  </delete>
+  <update id="modifyDepartment">
+    update department_t set company_id=#{companyId},status=#{status},department_name=#{departmentName} where department_id=#{departmentId}
+  </update>
+  <select id="getStaffCount" resultType="com.nk.entity.StaffCount">
+    select a.company_name,b.department_name,count(*) num from company_t a,department_t b,user_t c
+    where a.company_id=b.company_id and b.department_id=c.department_id
+    <if test="companyId !=null and companyId !=''">
+      and a.company_id=#{companyId}
+    </if>
+    <if test="departmentId !=null and departmentId !=''">
+      and b.department_id=#{departmentId}
+    </if>
+    group by a.company_name,b.department_name order by a.company_name
+  </select>
+    <select id="getDepartmentByIdStr" resultType="com.nk.entity.Department">
+      select * from department_t where department_id in (${idStr})
+    </select>
+  <select id="getLastDepartment" resultType="com.nk.entity.Department">
+    select * from department_t t where not exists (select 1 from department_t where department_id>t.department_id)
+  </select>
+  <select id="getDepartmentByCompanyIdAdd" resultMap="BaseResultMap">
+    select * from department_t where status=1
+    <if test="companyId !=null and companyId!=''">
+      and company_id=#{companyId}
+    </if>
+  </select>
+</mapper>
